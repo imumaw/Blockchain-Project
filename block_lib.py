@@ -109,20 +109,20 @@ class Block:
         self.prev_hash = prev_hash
         self.transactions = transactions
         
+    def compute_hash( self ):
         #initialize block data using previous hash
-        self.data = prev_hash
+        self.data = self.prev_hash
         
         #get block data as single string
-        for i in range( len(transactions) ):
-            curr_transaction = transactions[i]          #get current transaction
+        for i in range( len(self.transactions) ):
+            curr_transaction = self.transactions[i]          #get current transaction
             self.data += " | "                          #add gap between elements
             self.data += curr_transaction.get_str()     #get string of current transaction
             
-        #get hash using hashlib
-        self.hash = sha256( self.data.encode() ).hexdigest()
+        #return hash using hashlib
+        return sha256( self.data.encode() ).hexdigest()
         
     def print_block( self ):        #placeholder for future implementation
         
         return
-    
 ###############################################################################
