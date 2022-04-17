@@ -51,7 +51,8 @@ class Blockchain:
     Private Members:
         __blocks : all blocks contained within blockchain
     """
-    
+    difficulty = 3              #hard coded value - will be user inputted
+
     def __init__( self ):
         
         #initialize empty list of blocks as private member (DO NOT REMOVE UNDERSCORES)
@@ -71,7 +72,20 @@ class Blockchain:
         self.__blocks.append( new_block )
         
         return
-    
+
+    def proof_of_work(self, block): 
+        # returns proof (i.e. hash) for new block to be inserted
+        block.nonce = 0
+
+        # increments nonce until hash meets requirements in brute force style
+        computed_hash = block.compute_hash()
+        while not(computed_hash.startswith('0' * Blockchain.difficulty)):
+            block.nonce += 1
+            computed_hash = block.compute_hash()
+
+        return computed_hash
+
+
     def print_chain( self ):        #placeholder for future implementation
         
         return
@@ -108,21 +122,27 @@ class Block:
         #set basic members
         self.prev_hash = prev_hash
         self.transactions = transactions
+        self.nonce = 0
         
+    def compute_hash( self ):
+        """
+        Returns hash of block contents
+        """
         #initialize block data using previous hash
-        self.data = prev_hash
+        self.data = self.prev_hash
         
         #get block data as single string
-        for i in range( len(transactions) ):
-            curr_transaction = transactions[i]          #get current transaction
+        for i in range( len(self.transactions) ):
+            curr_transaction = self.transactions[i]     #get current transaction
             self.data += " | "                          #add gap between elements
             self.data += curr_transaction.get_str()     #get string of current transaction
-            
-        #get hash using hashlib
-        self.hash = sha256( self.data.encode() ).hexdigest()
+
+        self.data += self.nonce                         #add nonce val to end of data string
+
+        #return hash using hashlib
+        return sha256( self.data.encode() ).hexdigest()
         
     def print_block( self ):        #placeholder for future implementation
         
         return
-    
 ###############################################################################
