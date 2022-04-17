@@ -71,7 +71,6 @@ class Blockchain:
         self.__blocks.append( new_block )
         
         return
-    
     def print_chain( self ):        #placeholder for future implementation
         
         return
@@ -108,17 +107,23 @@ class Block:
         #set basic members
         self.prev_hash = prev_hash
         self.transactions = transactions
+        self.nonce = 0
         
     def compute_hash( self ):
+        """
+        Returns hash of block contents
+        """
         #initialize block data using previous hash
         self.data = self.prev_hash
         
         #get block data as single string
         for i in range( len(self.transactions) ):
-            curr_transaction = self.transactions[i]          #get current transaction
+            curr_transaction = self.transactions[i]     #get current transaction
             self.data += " | "                          #add gap between elements
             self.data += curr_transaction.get_str()     #get string of current transaction
-            
+
+        self.data += self.nonce                         #add nonce val to end of data string
+
         #return hash using hashlib
         return sha256( self.data.encode() ).hexdigest()
         
