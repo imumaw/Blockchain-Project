@@ -135,7 +135,7 @@ class Block:
         for i in range( len(self.transactions) ):
             curr_transaction = self.transactions[i]     #get current transaction
             self.data += " | "                          #add gap between elements
-            self.data += curr_transaction.get_str()     #get string of current transaction
+            self.data += str(curr_transaction)          #get string of current transaction
 
         self.data += self.nonce                         #add nonce val to end of data string
 
