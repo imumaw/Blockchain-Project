@@ -1,8 +1,16 @@
 import datetime
 
 class Message:
+    """
+        Message holds a few pieces of data about a message between 2 users and is similar to an email.
 
-	#initilizer creates the data about the message
+        It contains:
+            - The message's sender
+            - The message's receiver
+            - The time of message
+            - The actual message
+    """
+
 	def __init__(self, sender, receiver, message):
 		self.sender = sender
 		self.receiver = receiver
