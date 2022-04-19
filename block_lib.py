@@ -51,12 +51,13 @@ class Blockchain:
     Private Members:
         __blocks : all blocks contained within blockchain
     """
-    
-    def __init__( self ):
+
+    def __init__( self, in_difficulty ):
         
-        #initialize empty list of blocks as private member (DO NOT REMOVE UNDERSCORES)
+        #initialize empty list of blocks and difficulty as private members (DO NOT REMOVE UNDERSCORES)
         #while Python doesn't completely prevent private member access, this is more secure
         self.__blocks = []
+        self.__difficulty = in_difficulty
         
     def add_block( self, transactions=[] ):
         
@@ -71,7 +72,19 @@ class Blockchain:
         self.__blocks.append( new_block )
         
         return
-    
+
+    def proof_of_work(self, block): 
+        # returns proof (i.e. hash) for new block to be inserted
+        block.nonce = 0
+
+        # increments nonce until hash meets requirements in brute force style
+        computed_hash = block.compute_hash()
+        while not(computed_hash.startswith('0' * self.__difficulty)):
+            block.nonce += 1
+            computed_hash = block.compute_hash()
+
+        return computed_hash
+
     def print_chain( self ):        #placeholder for future implementation
         
         return
