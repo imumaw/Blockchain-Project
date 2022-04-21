@@ -1,3 +1,8 @@
+# uWSGI stuff that doesn't need to be committed for this project
+server.ini
+server.sock
+wsgi.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
