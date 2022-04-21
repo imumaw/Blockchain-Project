@@ -83,16 +83,22 @@ class Blockchain:
         self.__difficulty = in_difficulty
     
     ###########################################################################
+      
+    def add_block( self, block, hash ):
+        
+        # check new block matches last hash in chain
+        last_hash = self.__blocks[-1].hash
+        if block.prev_hash != last_hash
+            return Talse
+        
+        # checks if new block hash is valid
+        if not self.valid_hash(block, hash):
+            return False
 
-    def add_block( self, new_block, proof ):
+        block.hash = hash
+        self.blocks.append(block)
+        return True
         
-        #update hash
-        new_block.hash = proof
-        
-        #add new block to blockchain list
-        self.__blocks.append( new_block )
-        
-        return
 
     ###########################################################################
 
@@ -107,6 +113,40 @@ class Blockchain:
             computed_hash = block.compute_hash()
 
         return computed_hash
+    
+    def valid_hash(self, block, hash):
+        """
+        Checks if hash is correct and satisfies difficulty
+        Returns True on succuss, false on failure
+        """
+        if not hash.startswith('0' * self.__difficulty):
+            return False
+
+        if hash != block.compute_hash:
+            return False
+
+        return True
+
+
+    def mine (self):
+        """
+        Adds pending transactions to the blockchain by solving proof-of-work and confirming messages
+        returns hash of new block upon success
+        returns false on failure
+        """
+        if not messages:
+            return False
+
+        prev_block = self.__blocks[-1].hash
+        block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
+        new_hash = self.proof_of_work(block)
+
+        if not self.add_block(block, new_hash):
+            return False
+
+        self.unconfirmed_messages = []
+        return new_hash
+
 
     ###########################################################################
 
