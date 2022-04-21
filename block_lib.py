@@ -19,6 +19,8 @@
 """
 
 ###############################################################################
+###############################################################################
+###############################################################################
 
 #hashing function
 from hashlib import sha256
@@ -27,8 +29,11 @@ from hashlib import sha256
 import datetime
 
 ###############################################################################
+###############################################################################
+###############################################################################
 
 class Blockchain:
+    
     """
     Class for management of entire blockchain.
     
@@ -41,7 +46,8 @@ class Blockchain:
                 
         add_block : adds a block to blockchain
             Parameters:
-                transactions (list, optional) - list of transactions stored by block. Must be of transaction class. If not given, defaults to []
+                block (Block class) : empty block
+                proof ( TYPE NEEDED ) : proof of work hash
             Returns:
                 None
                 
@@ -57,15 +63,17 @@ class Blockchain:
             Returns:
                 None
         
-        html : return an html representation of a chain with styling included.
+        html : get an html representation of a chain with styling included.
             Parameters:
-                <>
+                None
             Returns:
-                <>
+                html_string : string containing html code for website
     
     Private Members:
         __blocks : all blocks contained within blockchain
     """
+    
+    ###########################################################################
 
     def __init__( self, in_difficulty ):
         
@@ -73,28 +81,23 @@ class Blockchain:
         #while Python doesn't completely prevent private member access, this is more secure
         self.__blocks = []
         self.__difficulty = in_difficulty
+    
+    ###########################################################################
+
+    def add_block( self, new_block, proof ):
         
-    def add_block( self, messages=[] ):
+        #update hash
+        new_block.hash = proof
         
-        #if we don't have a previous block we have a default hash
-        if len(self.__blocks)==0:
-            prev_hash = "ROOT"
-        
-        #get previous block and hash by accessing last list element
-        else:
-            prev_block = self.__blocks[-1]
-            prev_hash = prev_block.hash
-        
-        #create new block using hash from previous block
-        new_block = Block( messages, prev_hash )
-        
-        #add new block to blockchain
+        #add new block to blockchain list
         self.__blocks.append( new_block )
         
         return
 
+    ###########################################################################
+
     def proof_of_work(self, block): 
-        # returns proof (i.e. hash) for new block to be inserted
+
         block.nonce = 0
 
         # increments nonce until hash meets requirements in brute force style
@@ -105,7 +108,9 @@ class Blockchain:
 
         return computed_hash
 
-    def print_chain( self, block_width=60 ):        #placeholder for future implementation
+    ###########################################################################
+
+    def print_chain( self, block_width=60 ):
         
         #print the start of the chain
         output = "START OF BLOCKCHAIN\n"
@@ -118,16 +123,22 @@ class Blockchain:
     
         return output
 
+    ###########################################################################
+
     def html(self):
 
+        #init with empty string
         html_string = ""
 
+        #go through blocks and get html for each, appending to string
         for block in self.__blocks:
             html_string += '<div style="padding: 25px">' + block.html() + '</div>'
             html_string += '<div style="font-size: 24px; text-align: center;">&#8595;&#8595;&#8595;&#8595;</div>'
 
         return html_string
 
+###############################################################################
+###############################################################################
 ###############################################################################
 
 class Block:
@@ -141,6 +152,8 @@ class Block:
                 prev_hash (string, optional) - string storing previous hash. If no hash is given, defaults to "ROOT"
             Returns:
                 None
+                
+        compute_hash : 
         
         print_block : prints information stored in Block <INCOMPLETE>
             Parameters:
@@ -155,34 +168,18 @@ class Block:
         hash : block hash generated using data
     """
     
-    def __init__( self, messages = [], prev_hash="ROOT" ):
+    ###########################################################################
+    
+    def __init__( self, prev_hash="ROOT" ):
         
         #set basic members
+        self.hash = 0x0
         self.prev_hash = prev_hash
-        self.messages = messages
+        self.messages = []
         self.nonce = 0
-        
     
-    def compute_hash( self ):
-        """
-        Returns hash of block contents
-        """
-
-        #initialize block data using previous hash
-        self.data = self.prev_hash
-        
-        #get block data as single string
-        for i in range( len(self.messages) ):
-            curr_message = self.messages[i]          #get current transaction
-            self.data += " | "                          #add gap between elements
-            self.data += curr_message.print_message()     #get string of current transaction
-
-        # add nonce val to end of data string
-        self.data += self.nonce
-            
-        #get hash using hashlib
-        return sha256( self.data.encode() ).hexdigest()
-        
+    ###########################################################################
+    
     def print_block( self, block_width=60 ):
         
         #this will prevent errors
@@ -232,6 +229,7 @@ class Block:
         
         return output
     
+    ###########################################################################
     
     def gen_line( self, string, width, lborder, rborder ):
         
@@ -273,6 +271,8 @@ class Block:
             
         return output
 
+    ###########################################################################
+
     def html(self):
         """Return an html representation of a block with styling included."""
 
@@ -286,6 +286,8 @@ class Block:
         return html_string
     
 ###############################################################################
+###############################################################################
+###############################################################################
 
 class Message:
     """
@@ -298,11 +300,15 @@ class Message:
             - The actual message
     """
 
+    ###########################################################################
+
     def __init__(self, sender, receiver, message):
         self.sender = sender
         self.receiver = receiver
         self.message = message
         self.time = datetime.datetime.now()
+
+    ###########################################################################
 
     def print_message(self):
         
@@ -321,6 +327,8 @@ class Message:
             {the_message}"""
         
         return m_format.format( the_sender = self.sender, the_receiver = self.receiver, the_time = self.time.isoformat(), the_message = self.message)
+
+    ###########################################################################
 
     def html(self):
         """Return an html representation of a message with styling included."""
