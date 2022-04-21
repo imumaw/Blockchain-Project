@@ -102,6 +102,17 @@ class Blockchain:
     
         return output
 
+    def html(self):
+        """Return an html representation of a chain with styling included."""
+
+        html_string = ""
+
+        for block in self.__blocks:
+            html_string += '<div style="padding: 25px">' + block.html() + '</div>'
+            html_string += '<div style="font-size: 24px; text-align: center;">&#8595;&#8595;&#8595;&#8595;</div>'
+
+        return html_string
+
 ###############################################################################
 
 class Block:
@@ -236,6 +247,18 @@ class Block:
         output += rborder + "\n"
             
         return output
+
+    def html(self):
+        """Return an html representation of a block with styling included."""
+
+        html_string = '<div style="padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, .1);">'
+        html_string += f'<div style="font-size: 1rem; font-weight: bold; font-family: monospace; text-align: center;">Block Hash: {self.hash}</div>'
+        
+        for message in self.messages:
+            html_string += '<div style="margin-top: 40px">' + message.html() + '</div>'
+
+        html_string += "</div>"
+        return html_string
     
 ###############################################################################
 
@@ -273,3 +296,28 @@ class Message:
             {the_message}"""
         
         return m_format.format( the_sender = self.sender, the_receiver = self.receiver, the_time = self.time.isoformat(), the_message = self.message)
+
+    def html(self):
+        """Return an html representation of a message with styling included."""
+
+        return f"""
+            <div style='font-family: sans-serif;'>
+                <ul style='list-style-type: none; margin: 10px; padding: 5px; border-bottom: 1px solid lightgray; border-top: 1px solid lightgray;'>
+                    <li>
+                        <span style="display: inline-block; min-width: 50px; font-weight: bold;">From:</span>
+                        <span style="flex: 10; font-weight: bold;">{self.sender}</span>
+                    </li>
+                    <li>
+                        <span style="display: inline-block; min-width: 50px;">To:</span>
+                        <span style="flex: 10;">{self.receiver}</span>
+                    </li>
+                    <li>
+                        <span style="display: inline-block; min-width: 50px;">At:</span>
+                        <span style="flex: 10;">{self.time.strftime('%a, %b %d, %Y %I:%M%p')}</span>
+                    </li>
+                </ul>
+                <p style='margin-left: 15px;'>
+                    {self.message}
+                </>
+            </div>
+        """
