@@ -22,9 +22,6 @@
 ###############################################################################
 ###############################################################################
 
-#hashing function
-from hashlib import sha256
-
 #record message time
 import datetime
 
@@ -46,8 +43,8 @@ class Blockchain:
                 
         add_block : adds a block to blockchain
             Parameters:
-                block (Block class) : empty block
-                proof ( TYPE NEEDED ) : proof of work hash
+                block (Block class) - empty block
+                proof ( hex ) - proof of work hash
             Returns:
                 None
                 
@@ -67,7 +64,7 @@ class Blockchain:
             Parameters:
                 None
             Returns:
-                html_string : string containing html code for website
+                html_string - string containing html code for website
     
     Private Members:
         __blocks : all blocks contained within blockchain
@@ -192,30 +189,43 @@ class Block:
                 prev_hash (string, optional) - string storing previous hash. If no hash is given, defaults to "ROOT"
             Returns:
                 None
-                
-        compute_hash : 
         
-        print_block : prints information stored in Block <INCOMPLETE>
+        print_block : prints messages stored in Block. Also creates a border around the block
+            Parameters:
+                block_width (int, optional) - width of block in chars. Defaults to 60.
+            Returns:
+                output (string) - string
+                
+        __gen_line (PRIVATE) : creates an individual line of Block output, formatted to look all nice
+            Parameters:
+                string (string) - the unaltered line of output from the Message
+                width (int) - width of block to be produced
+                lborder (string) - left side border of block
+                rborder (string) - right side border of block
+            Returns:
+                output (string) - string of output which is formatted to match the block
+                
+        html : get an html representation of a block with styling included.
             Parameters:
                 None
             Returns:
-                None
+                html_string - string containing html code for website
 
     Public Members:
-        prev_hash : hash of previous block
-        messages : list of messages stored by block. Must be of transaction class.
-        data : string containing all block data (used to generate hash)
-        hash : block hash generated using data
+        prev_hash (hex) - hash of previous block
+        messages (list of Message class) - list of messages stored by block. Must be of transaction class.
+        hash (hex) - block hash generated using data
+        nonce (int) - number only use once
     """
     
     ###########################################################################
     
-    def __init__( self, prev_hash="ROOT" ):
+    def __init__( self, messages = [], prev_hash="ROOT" ):
         
         #set basic members
         self.hash = 0x0
         self.prev_hash = prev_hash
-        self.messages = []
+        self.messages = messages
         self.nonce = 0
     
     ###########################################################################
@@ -238,32 +248,32 @@ class Block:
         #hash of block to go at top
         title = "BLOCK HASH: " + str(self.hash)
         
-        #the actual block will look something like this (this example has default width):
-        """
-        ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-        ┃                                                         ┃
-        ┃ From: Dr. Morrison                                      ┃
-        ┃ To: Definitely CS Majors Group                          ┃
-        ┃ At: 2022-05-01:T16:34:04+00:00                          ┃
-        ┃ Message:                                                ┃
-        ┃    Wow, this block is decently formatted.               ┃
-        ┃                                                         ┃
-        ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-        """
-        
+        #create title of block
         output = up_border + "\n"
         output += self.gen_line( title, block_width, lside, rside )
         
+        #iterate through messages
         for message in self.messages:
+            
+            #pad the space above the message
             output += pad_line + "\n"
+            
+            #call print_message and split between each line
             message_elements = message.print_message().splitlines()
             
-            output += self.gen_line( message_elements[0], block_width, lside, rside )
-            output += self.gen_line( message_elements[1], block_width, lside, rside )
-            output += self.gen_line( message_elements[2], block_width, lside, rside )
-            output += self.gen_line( message_elements[3], block_width, lside, rside )
-            output += self.gen_line( message_elements[4], block_width, lside+"    ", rside )
+            #append to output using gen_line on each message element
+            for i in range( len(self.messages) ):
+                
+                #information lines are not indented
+                if i<4:
+                    output += self.__gen_line( message_elements[i], block_width, lside, rside )
+                    
+                #message lines are indented so we increase the left side border.
+                #this also accounts for edge cases where the message has multiple paragraphs
+                else:
+                    output += self.__gen_line( message_elements[i], block_width, lside+"    ", rside )
         
+        #pad the bottom of the block and add the border
         output += pad_line + "\n"
         output += dn_border + "\n"
         
@@ -271,42 +281,57 @@ class Block:
     
     ###########################################################################
     
-    def gen_line( self, string, width, lborder, rborder ):
+    def __gen_line( self, string, width, lborder, rborder ):
         
-        line = lborder + string
+        #initialize variables
+        line = lborder + string     #prevent extra work by appending the left border
         output = ""
         
+        #index value is independent of the for loop
         i = 0
+        
+        #loop through each character in the line
         for char in line:
             
+            #in the case where we encounter a newline character
             if char=="\n":
+                
+                #pad with spaces and move index
                 while i<(width-len(rborder)):
                     i += 1
                     output += " "
-                    
+                
+                #end line and create new line
                 output += rborder + "\n" + lborder 
                 i=len(lborder)
             
+            #in every other case -- no newline character
             else:
     
+                #if we encounter a space and we're at the beginning we can skip it
                 if i==len(lborder) and char==" ":
                     pass
-                    
+                 
+                #otherwise we'll append the character
                 else:
                     i+=1
                     output+=char
             
+                #if we're at the end of the line...
                 if i==width-len(rborder):
                     
+                    #add border and newline and border
                     output += rborder + "\n" + lborder 
+                    
+                    #reset index
                     i=len(lborder)
                 
-            
-                
+        #now at the end of the line we pad it out        
         while i<(width-len(rborder)):
             i += 1
             output += " "
-            
+        
+        #add the final border
         output += rborder + "\n"
             
         return output
@@ -314,15 +339,18 @@ class Block:
     ###########################################################################
 
     def html(self):
-        """Return an html representation of a block with styling included."""
 
+        #create string of code and append the start of the block
         html_string = '<div style="padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, .1);">'
         html_string += f'<div style="font-size: 1rem; font-weight: bold; font-family: monospace; text-align: center;">Block Hash: {self.hash}</div>'
         
+        #append each message's code to output
         for message in self.messages:
             html_string += '<div style="margin-top: 40px">' + message.html() + '</div>'
 
+        #terminate
         html_string += "</div>"
+        
         return html_string
     
 ###############################################################################
@@ -330,14 +358,36 @@ class Block:
 ###############################################################################
 
 class Message:
+    
     """
-        Message holds a few pieces of data about a message between 2 users and is similar to an email.
+    Message holds a few pieces of data about a message between 2 users and is similar to an email.
+    
+    Functions:
+        __init__ : initializes a Block
+            Parameters:
+                sender (string) - who is sending the message
+                receiver (string) - who is getting the message
+                message (string) - message content
+            Returns:
+                None
+        
+        print_block : prints message
+            Parameters:
+                None
+            Returns:
+                output (string) - string
+                
+        html : get an html representation of a block with styling included.
+            Parameters:
+                None
+            Returns:
+                html_string - string containing html code for website
 
-        It contains:
-            - The message's sender
-            - The message's receiver
-            - The time of message
-            - The actual message
+    Public Members:
+        sender (string) - who is sending the message
+        receiver (string) - who is getting the message
+        message (string) - message content
+        time (string) - the time at which the message was sent
     """
 
     ###########################################################################
@@ -352,14 +402,6 @@ class Message:
 
     def print_message(self):
         
-        #Output format:
-            
-        #From: <sender>
-        #To: <receiver>
-        #At: <date and time>
-        #Message:
-        #   <message content>
-        
         m_format = """From: {the_sender}
         To: {the_receiver}
         At: {the_time}
@@ -371,7 +413,6 @@ class Message:
     ###########################################################################
 
     def html(self):
-        """Return an html representation of a message with styling included."""
 
         return f"""
             <div style='font-family: sans-serif;'>
