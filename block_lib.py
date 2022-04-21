@@ -62,21 +62,20 @@ class Blockchain:
         self.__blocks = []
         self.__difficulty = in_difficulty
         
-    def add_block( self, messages=[] ):
+    def add_block( self, block, hash ):
         
-        #get previous block and hash by accessing last list element
-        if len(self.__blocks)==0:
-            prev_hash = "ROOT"
-            
-        else:
-            prev_block = self.__blocks[-1]
-            prev_hash = prev_block.hash
+        # check new block matches last hash in chain
+        last_hash = self.__blocks[-1].hash
+        if block.prev_hash != last_hash
+            return Talse
         
-        #create new block using hash from previous block
-        new_block = Block( messages, prev_hash )
-        
-        #add new block to blockchain
-        self.__blocks.append( new_block )
+        # checks if new block hash is valid
+        if not self.valid_hash(block, hash):
+            return False
+
+        block.hash = hash
+        self.blocks.append(block)
+        return True
         
         return
 
@@ -91,6 +90,40 @@ class Blockchain:
             computed_hash = block.compute_hash()
 
         return computed_hash
+    
+    def valid_hash(self, block, hash):
+        """
+        Checks if hash is correct and satisfies difficulty
+        Returns True on succuss, false on failure
+        """
+        if not hash.startswith('0' * self.__difficulty):
+            return False
+
+        if hash != block.compute_hash:
+            return False
+
+        return True
+
+
+    def mine (self):
+        """
+        Adds pending transactions to the blockchain by solving proof-of-work and confirming messages
+        returns hash of new block upon success
+        returns false on failure
+        """
+        if not messages:
+            return False
+
+        prev_block = self.__blocks[-1].hash
+        block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
+        new_hash = self.proof_of_work(block)
+
+        if not self.add_block(block, new_hash):
+            return False
+
+        self.unconfirmed_messages = []
+        return new_hash
+
 
     def print_chain( self, block_width=60 ):        #placeholder for future implementation
         
