@@ -134,18 +134,28 @@ class Block:
         #set basic members
         self.prev_hash = prev_hash
         self.messages = messages
+        self.nonce = 0
         
+    
+    def compute_hash( self ):
+        """
+        Returns hash of block contents
+        """
+
         #initialize block data using previous hash
-        self.data = prev_hash
+        self.data = self.prev_hash
         
         #get block data as single string
         for i in range( len(self.messages) ):
             curr_message = self.messages[i]          #get current transaction
             self.data += " | "                          #add gap between elements
             self.data += curr_message.print_message()     #get string of current transaction
+
+        # add nonce val to end of data string
+        self.data += self.nonce
             
         #get hash using hashlib
-        self.hash = sha256( self.data.encode() ).hexdigest()
+        return sha256( self.data.encode() ).hexdigest()
         
     def print_block( self, block_width=60 ):
         
