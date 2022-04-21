@@ -11,7 +11,7 @@
         Julia Buckley       (jbuckle2@nd.edu)
 
     PROJECT DIRECTOR:
-        Matt morrison       (matt.morrison@nd.edu)
+        Matt Morrison       (matt.morrison@nd.edu)
     
  * Filename: block_lib.py
  * Date Created: 4/13/21
@@ -45,11 +45,23 @@ class Blockchain:
             Returns:
                 None
                 
+        proof_of_work : gets the hash of the next block to be inserted
+            Parameters:
+                <>
+            Returns:
+                <>
+                
         print_chain : prints all data stored within blockchain <INCOMPLETE>
             Parameters:
                 None
             Returns:
                 None
+        
+        html : return an html representation of a chain with styling included.
+            Parameters:
+                <>
+            Returns:
+                <>
     
     Private Members:
         __blocks : all blocks contained within blockchain
@@ -64,10 +76,11 @@ class Blockchain:
         
     def add_block( self, messages=[] ):
         
-        #get previous block and hash by accessing last list element
+        #if we don't have a previous block we have a default hash
         if len(self.__blocks)==0:
             prev_hash = "ROOT"
-            
+        
+        #get previous block and hash by accessing last list element
         else:
             prev_block = self.__blocks[-1]
             prev_hash = prev_block.hash
@@ -94,16 +107,18 @@ class Blockchain:
 
     def print_chain( self, block_width=60 ):        #placeholder for future implementation
         
+        #print the start of the chain
         output = "START OF BLOCKCHAIN\n"
     
+        #iterate through all blocks
         for block in self.__blocks:
-            output += "⇩⇩⇩⇩⇩\n"
-            output += block.print_block( block_width )
+            
+            output += "⇩⇩⇩⇩⇩\n"     #connect the blocks together
+            output += block.print_block( block_width )      #call the print function for the block and append to the output string
     
         return output
 
     def html(self):
-        """Return an html representation of a chain with styling included."""
 
         html_string = ""
 
