@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block title %}HOME{% endblock %}
+
+{% block content %}
+
+</br>
+<h3 align='center'>Previous Messages</h3>
+<ul class="list-group list-group-flush" id='notes'>
+	{% if user.messages|length > 5 %}
+	<li class='list-group-item'>---  {{ user.messages|length - 5 }} Older Messages Not Shown  ---</li>
+	
+	{% for message in user.messages %}
+	{% if loop.index > user.messages|length -5 %}
+	<li class='list-group-item'>{{message.data}}</li>
+	{% endif %}
+	{% endfor %} 
+	
+	{% else %}}
+
+	{% for message in user.messages %}
+	<li class='list-group-item'>{{message.data}}</li>
+	{% endfor %} 
+	{% endif %}
+</ul>
+</br>
+
+
+
+<form method='POST'>
+
+	<textarea name="message" id="message" class='form-control'></textarea>
+	</br>
+	<div align='center'>
+		<button type='submit' class='btn btn-primary'>Commit New Message</button>
+	</div>
+
+
+
+</form>
+
+{% endblock %}
+
