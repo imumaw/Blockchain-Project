@@ -78,7 +78,15 @@ class Blockchain:
         #while Python doesn't completely prevent private member access, this is more secure
         self.__blocks = []
         self.__difficulty = in_difficulty
+        self.unconfirmed_messages = []
+        self.add_genesis_block()
     
+    ###########################################################################
+
+    def add_genesis_block(self):
+        gensis_block = Block()
+        self.blocks.append(block)
+
     ###########################################################################
       
     def add_block( self, block, hash ):
@@ -86,7 +94,7 @@ class Blockchain:
         # check new block matches last hash in chain
         last_hash = self.__blocks[-1].hash
         if block.prev_hash != last_hash
-            return Talse
+            return False
         
         # checks if new block hash is valid
         if not self.valid_hash(block, hash):
@@ -110,6 +118,8 @@ class Blockchain:
             computed_hash = block.compute_hash()
 
         return computed_hash
+
+    ###########################################################################
     
     def valid_hash(self, block, hash):
         """
@@ -124,6 +134,7 @@ class Blockchain:
 
         return True
 
+    ###########################################################################
 
     def mine (self):
         """
@@ -131,8 +142,6 @@ class Blockchain:
         returns hash of new block upon success
         returns false on failure
         """
-        if not messages:
-            return False
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
@@ -143,7 +152,6 @@ class Blockchain:
 
         self.unconfirmed_messages = []
         return new_hash
-
 
     ###########################################################################
 
