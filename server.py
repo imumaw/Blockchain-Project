@@ -1,18 +1,7 @@
-from flask import Flask
+from flask import Flask, request, send_file
 import block_lib as blib
 
-chain = blib.Blockchain(3)
-
-message1 = blib.Message( "Dr. Morrison", "Definitely CS Majors Group", "Wow this is decently formatted" )
-messages1 = [message1]
-
-chain.add_block( messages1 )
-
-message2 = blib.Message( "Definitely CS Majors Group", "Dr. Morrison", "Thank you professor!" )
-message3 = blib.Message( "Definitely CS Majors Group", "Dr. Morrison", "Here's hoping for that gift card prize!" )
-messages2 = [message2, message3]
-
-chain.add_block( messages2 )
+blockchain = blib.Blockchain(3)
 
 ROOT = "/definitely-cs-project"
 
@@ -20,11 +9,29 @@ app = Flask(__name__)
 
 @app.route(ROOT + "/")
 def index():
-    return chain.html()
+    return send_file("webpage.html")
 
-@app.route(ROOT + "/send")
+@app.route(ROOT + "/send", methods=["POST"])
 def send():
-    return "We should be able to POST messages here."
+    raw_messages = request.get_json()
+
+    messages = []
+    for raw_message in raw_messages:
+        message = blib.Message(
+            sender=raw_message['from'], 
+            receiver=raw_message['to'], 
+            message=raw_message['message']
+            )
+
+        messages.append(message)
+
+    new_block = blib.Block(messages)
+    # How to add to blockchain???
+    return "Block added.", 200
+
+@app.route(ROOT + "/chain")
+def chain():
+    return blockchain.html()
 
 if __name__ == "__main__":
     app.run(debug=True)
