@@ -85,8 +85,8 @@ class Blockchain:
         
         # check new block matches last hash in chain
         last_hash = self.__blocks[-1].hash
-        if block.prev_hash != last_hash
-            return Talse
+        if block.prev_hash != last_hash:
+            return False
         
         # checks if new block hash is valid
         if not self.valid_hash(block, hash):
