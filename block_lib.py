@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """
  * Groupname: Definitely CS Majors
 
@@ -24,6 +25,7 @@
 
 #record message time
 import datetime
+import hashlib
 
 ###############################################################################
 ###############################################################################
@@ -84,8 +86,8 @@ class Blockchain:
     ###########################################################################
 
     def add_genesis_block(self):
-        gensis_block = Block()
-        self.blocks.append(block)
+        genesis_block = Block()
+        self.__blocks.append(genesis_block)
 
     ###########################################################################
       
@@ -93,11 +95,12 @@ class Blockchain:
         
         # check new block matches last hash in chain
         last_hash = self.__blocks[-1].hash
-        if block.prev_hash != last_hash
+        if block.prev_hash != last_hash:
             return False
         
         # checks if new block hash is valid
         if not self.valid_hash(block, hash):
+            print("here")
             return False
 
         block.hash = hash
@@ -146,6 +149,7 @@ class Blockchain:
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
         new_hash = self.proof_of_work(block)
+        print(new_hash)
 
         if not self.add_block(block, new_hash):
             return False
@@ -235,6 +239,30 @@ class Block:
         self.prev_hash = prev_hash
         self.messages = messages
         self.nonce = 0
+
+    ###########################################################################
+
+
+    def compute_hash( self ):
+        """
+        Returns hash of block contents
+        """
+
+        #initialize block data using previous hash
+        self.data = str(self.prev_hash)
+
+        #get block data as single string
+        for i in range( len(self.messages) ):
+            curr_message = self.messages[i]          #get current transaction
+            self.data += " | "                          #add gap between elements
+            self.data += curr_message.print_message()     #get string of current transaction
+
+        # add nonce val to end of data string
+        self.data += str(self.nonce)
+
+        #get hash using hashlib
+        return hashlib.sha256(self.data.encode()).hexdigest()
+
     
     ###########################################################################
     
