@@ -26,6 +26,7 @@
 #record message time
 import datetime
 import hashlib
+import threading
 
 ###############################################################################
 ###############################################################################
@@ -86,6 +87,10 @@ class Blockchain:
         self.__difficulty = in_difficulty
         self.unconfirmed_messages = []
         self.add_genesis_block()
+        
+        self.mining_thread = threading.Thread(target=self.initialize_mine)
+        self.lock = threading.Lock()
+        mining_thread.start()
     
     ###########################################################################
 
@@ -99,8 +104,9 @@ class Blockchain:
         """
         add message to unconfirmed messages queue
         """
-
+        self.lock.acquire()
         self.unconfirmed_messages.append(message)
+        self.lock.release()
 
     ###########################################################################
       
@@ -157,19 +163,29 @@ class Blockchain:
         returns hash of new block upon success
         returns false on failure
         """
-
+        self.lock.acquire()
         if self.unconfirmed_messages == []:
             return False
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
         self.unconfirmed_messages = []
+        self.lock.relase()
+
         new_hash = self.proof_of_work(block)
 
         if not self.add_block(block, new_hash):
             return False
 
         return new_hash
+
+    ###########################################################################
+
+    def initialize_mine (self):
+
+        while True:
+            self.mine()
+
 
     ###########################################################################
 
