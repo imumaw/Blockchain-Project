@@ -147,12 +147,12 @@ class Blockchain:
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
+        self.unconfirmed_messages = []
         new_hash = self.proof_of_work(block)
 
         if not self.add_block(block, new_hash):
             return False
 
-        self.unconfirmed_messages = []
         return new_hash
 
     ###########################################################################
