@@ -100,11 +100,10 @@ class Blockchain:
         
         # checks if new block hash is valid
         if not self.valid_hash(block, hash):
-            print("here")
             return False
 
         block.hash = hash
-        self.blocks.append(block)
+        self.__blocks.append(block)
         return True
         
 
@@ -132,7 +131,7 @@ class Blockchain:
         if not hash.startswith('0' * self.__difficulty):
             return False
 
-        if hash != block.compute_hash:
+        if hash != block.compute_hash():
             return False
 
         return True
@@ -149,7 +148,6 @@ class Blockchain:
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
         new_hash = self.proof_of_work(block)
-        print(new_hash)
 
         if not self.add_block(block, new_hash):
             return False
