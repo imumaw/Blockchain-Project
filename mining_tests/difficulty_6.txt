@@ -1,0 +1,30 @@
+Block #1 added at hash: 0000008c54d60f8717697c85a935281e3e8e3c4d8b223d2c320685147282ab17
+Elapsed time: 5.41 seconds
+--------------------------------------
+Block #2 added at hash: 0000001375b673d849d02278ee145d804e89a259c9db58a458bdd75870b3d900
+Elapsed time: 28.10 seconds
+--------------------------------------
+Block #3 added at hash: 000000f075391cab738cfbcb9323e848877c8334c781b36ef150e3e7c8be511b
+Elapsed time: 72.88 seconds
+--------------------------------------
+Block #4 added at hash: 0000007bbfcb8db6d24b99104604a0240653aeb64745448785f25177878e53fe
+Elapsed time: 19.61 seconds
+--------------------------------------
+Block #5 added at hash: 000000af0fdb1154ec99faaca67570f2993f7c4200fe942370d9ab77921f048b
+Elapsed time: 160.69 seconds
+--------------------------------------
+Block #6 added at hash: 0000003e7142d54b7e212ead7ddfc26f434ad3b382f53c4aaa29157d815970f4
+Elapsed time: 32.35 seconds
+--------------------------------------
+Block #7 added at hash: 000000bb7bed40c9763a691c5e84b2a044afcf501b096072f1c8535d6ae8e1a5
+Elapsed time: 32.39 seconds
+--------------------------------------
+Block #8 added at hash: 000000a9acd52ffea33ad57c82ef4b442622335102c6d4e0790535b448eb7f4a
+Elapsed time: 129.73 seconds
+--------------------------------------
+Block #9 added at hash: 0000003859aa81a1e5da43e7048a1606c475f7778035ea2366d867d3c15bc6df
+Elapsed time: 14.02 seconds
+--------------------------------------
+Block #10 added at hash: 00000048aa58cf4fddfe68e1334ea5e083512dbf8a36d4501e61ae0982317054
+Elapsed time: 42.65 seconds
+--------------------------------------

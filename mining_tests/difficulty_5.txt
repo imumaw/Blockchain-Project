@@ -1,0 +1,30 @@
+Block #1 added at hash: 00000ba87fb7b85ce9194e09440ee1555369a0af116426e01d4c3cc6b1ec7d67
+Elapsed time: 1.15 seconds
+--------------------------------------
+Block #2 added at hash: 0000077ec1faa10d7668a79feab0a7e7fea0b7312450b9899ef922bf0f188786
+Elapsed time: 0.32 seconds
+--------------------------------------
+Block #3 added at hash: 000009f15feae5dd134edcae710799e39f7cffe7873d1ca97f0ded2707504430
+Elapsed time: 1.23 seconds
+--------------------------------------
+Block #4 added at hash: 00000517d84cadac91afd2782121b0889b08bffffe4144ad37990ccf11fa40fc
+Elapsed time: 0.11 seconds
+--------------------------------------
+Block #5 added at hash: 00000770d000453c622ab7119c364a25e457fab114b6566a9e504b42d43fd966
+Elapsed time: 1.26 seconds
+--------------------------------------
+Block #6 added at hash: 00000bc0a1f0700bbedca0e22d9d7074e96bc416ce62e9647eea2ba214087c0c
+Elapsed time: 6.75 seconds
+--------------------------------------
+Block #7 added at hash: 000003c049b07a37c88607c2bb741a58008c9e5fa83119ec69b6e1f8bbb546ed
+Elapsed time: 8.31 seconds
+--------------------------------------
+Block #8 added at hash: 00000b648556bf66847a187d6c6579dbd3f77036af54dd89ed565c451f39e4b6
+Elapsed time: 0.11 seconds
+--------------------------------------
+Block #9 added at hash: 0000014a40bec11d9008c3b87c5e27052b2475169d0fbb587bc362b44e626b86
+Elapsed time: 0.36 seconds
+--------------------------------------
+Block #10 added at hash: 00000541f44ca5de75aa7994e8652d0faea40be43e2e0b90bdbd8214b7afd3de
+Elapsed time: 1.10 seconds
+--------------------------------------
