@@ -94,6 +94,15 @@ class Blockchain:
         self.__blocks.append(genesis_block)
 
     ###########################################################################
+
+    def add_message(self, message):
+        """
+        add message to unconfirmed messages queue
+        """
+
+        self.unconfirmed_messages.append(message)
+
+    ###########################################################################
       
     def add_block( self, block, hash ):
         
