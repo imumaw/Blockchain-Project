@@ -36,7 +36,7 @@ class Blockchain:
     """
     Class for management of entire blockchain.
     
-    Functions:
+    Public Functions:
         __init__ : initializes blockchain
             Parameters:
                 None
@@ -68,8 +68,12 @@ class Blockchain:
             Returns:
                 html_string - string containing html code for website
     
+    Public Members:
+        unconfirmed_messages : list of all messages not yet stored in blocks, accessed in FIFO order
+    
     Private Members:
         __blocks : all blocks contained within blockchain
+        __dificulty : length of hash to compute, longer hashes take longer to compute thus increasing the mining time
     """
     
     ###########################################################################
@@ -144,6 +148,9 @@ class Blockchain:
         returns hash of new block upon success
         returns false on failure
         """
+
+        if self.unconfirmed_messages == []:
+            return False
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
