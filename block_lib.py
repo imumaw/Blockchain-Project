@@ -49,6 +49,12 @@ class Blockchain:
             Returns:
                 None
                 
+        add_message : add message to unconfirmed messages queue
+            Parameters:
+                message (Message class) : message to be added
+            Returns:
+                None
+                
         add_block : adds a block to blockchain
             Parameters:
                 block (Block class):  empty block
@@ -83,6 +89,12 @@ class Blockchain:
                     1) There are no new messages to put into a block (otherwise we would have empty blocks)
                     2) add_block returns false (see add_block documentation)
                 Otherwise, returns hash (hex) of newly added block
+                
+        initialize_mine : starts the mining function, multithreading edition
+            Parameters:
+                None
+            Returns:
+                None
         
         print_chain : prints all data stored within blockchain <INCOMPLETE>
             Parameters:
@@ -98,6 +110,9 @@ class Blockchain:
     
     Public Members:
         unconfirmed_messages (list of messages) : list of all messages not yet stored in blocks, accessed in FIFO order
+        mining_thread (Thread class) : thread running the mining function
+        lock (Lock class) : used for locking messages to prevent errors
+        messages_cv (Conditional variable) : used for locking
     
     Private Members:
         __blocks (list of blocks) : all blocks contained within blockchain
@@ -119,10 +134,10 @@ class Blockchain:
         #add first block
         self.add_genesis_block()
         
+        #multithreading elements
         self.mining_thread = threading.Thread(target=self.initialize_mine)
         self.lock = threading.Lock()
         self.messages_cv = threading.Condition(self.lock)
-        
         self.mining_thread.start()
     
     ###########################################################################
@@ -140,13 +155,18 @@ class Blockchain:
     ###########################################################################
 
     def add_message(self, message):
-        """
-        add message to unconfirmed messages queue
-        """
+        
+        #locks messages
         self.lock.acquire()
+        
+        #adds new message
         self.unconfirmed_messages.append(message)
         self.messages_cv.notify_all()
+        
+        #releases lock
         self.lock.release()
+        
+        return
 
     ###########################################################################
       
@@ -166,7 +186,6 @@ class Blockchain:
         self.__blocks.append(block)
         
         return True
-        
 
     ###########################################################################
 
@@ -236,7 +255,6 @@ class Blockchain:
 
         while True:
             self.mine()
-
 
     ###########################################################################
 
