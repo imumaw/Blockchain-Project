@@ -119,14 +119,11 @@ class Blockchain:
         #add first block
         self.add_genesis_block()
         
-<<<<<<< Updated upstream
         self.mining_thread = threading.Thread(target=self.initialize_mine)
         self.lock = threading.Lock()
         self.messages_cv = threading.Condition(self.lock)
         
         self.mining_thread.start()
-=======
->>>>>>> Stashed changes
     
     ###########################################################################
 
@@ -141,7 +138,6 @@ class Blockchain:
         return
 
     ###########################################################################
-<<<<<<< Updated upstream
 
     def add_message(self, message):
         """
@@ -154,9 +150,6 @@ class Blockchain:
 
     ###########################################################################
       
-=======
-    
->>>>>>> Stashed changes
     def add_block( self, block, hash ):
         
         #returns false if new block is not properly connected to the last block in chain
@@ -212,16 +205,11 @@ class Blockchain:
 
     def mine( self ):
 
-<<<<<<< Updated upstream
         self.lock.acquire()
 
+        #check that there are messaged in queue
         while len(self.unconfirmed_messages) == 0:
             self.messages_cv.wait()
-=======
-        #check that there are messaged in queue. If not, returns False, as mining would not yield a useful block
-        if self.unconfirmed_messages == []:
-            return False
->>>>>>> Stashed changes
 
         #get most recent block hash
         prev_block_hash = self.__blocks[-1].hash
@@ -231,14 +219,9 @@ class Blockchain:
         
         #clear messages -- in certain implementations this is not enough, but this is sufficient for functionality in our use case
         self.unconfirmed_messages = []
-<<<<<<< Updated upstream
-
         self.lock.release()
-
-=======
         
         #get the new hash
->>>>>>> Stashed changes
         new_hash = self.proof_of_work(block)
 
         #if we fail to add the block properly, return False
