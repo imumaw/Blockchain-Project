@@ -26,6 +26,7 @@
 #record message time
 import datetime
 import hashlib
+import threading
 
 ###############################################################################
 ###############################################################################
@@ -86,12 +87,29 @@ class Blockchain:
         self.__difficulty = in_difficulty
         self.unconfirmed_messages = []
         self.add_genesis_block()
+        
+        self.mining_thread = threading.Thread(target=self.initialize_mine)
+        self.lock = threading.Lock()
+        self.messages_cv = threading.Condition(self.lock)
+        
+        self.mining_thread.start()
     
     ###########################################################################
 
     def add_genesis_block(self):
         genesis_block = Block()
         self.__blocks.append(genesis_block)
+
+    ###########################################################################
+
+    def add_message(self, message):
+        """
+        add message to unconfirmed messages queue
+        """
+        self.lock.acquire()
+        self.unconfirmed_messages.append(message)
+        self.messages_cv.notify_all()
+        self.lock.release()
 
     ###########################################################################
       
@@ -149,18 +167,31 @@ class Blockchain:
         returns false on failure
         """
 
-        if self.unconfirmed_messages == []:
-            return False
+        self.lock.acquire()
+
+        while len(self.unconfirmed_messages) == 0:
+            self.messages_cv.wait()
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
         self.unconfirmed_messages = []
+
+        self.lock.release()
+
         new_hash = self.proof_of_work(block)
 
         if not self.add_block(block, new_hash):
             return False
 
         return new_hash
+
+    ###########################################################################
+
+    def initialize_mine (self):
+
+        while True:
+            self.mine()
+
 
     ###########################################################################
 
