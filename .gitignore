@@ -2,6 +2,7 @@
 server.ini
 server.sock
 wsgi.py
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
