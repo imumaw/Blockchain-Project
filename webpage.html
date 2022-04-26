@@ -70,32 +70,7 @@
       }
     </style>
     <script>
-      let messages = [];
-      const sendDelay = 5;
-
-      let timeToSend = sendDelay;
-      /* Start an interval to keep track of how long it will be until a new block. */
-      const displayInterval = setInterval(() => {
-        timeToSend--;
-        const blockTimer = document.getElementById("block-timer");
-        blockTimer.innerText = timeToSend + "s until new block...";
-      }, 1000);
-
-      /* Start an interval to submit messages every 60 seconds. */
-      const sendInterval = setInterval(() => {
-        sendMessages();
-        updateCounter();
-        retrieveChain();
-        timeToSend = sendDelay;
-      }, sendDelay * 1000);
-
-      /**
-       * Update the counter for how many messages are in the queue.
-       */
-      function updateCounter() {
-        const queueData = document.getElementById("queue-data");
-        queueData.innerText = messages.length + " messages in queue...";
-      }
+      setInterval(retrieveChain, 10000);
 
       /**
        * Add a message to the message queue to be submitted later.
@@ -116,34 +91,17 @@
           message: messageInput.value,
         };
 
-        messages.push(message);
-        updateCounter();
-
-        toInput.value = "";
-        fromInput.value = "";
-        messageInput.value = "";
-      }
-
-      /**
-       * Submit recent messages.
-       * Typically used on an interval to send periodically.
-       */
-      function sendMessages() {
-        if (messages.length === 0) return;
-        const messagesToSend = [...messages];
-
         fetch("/definitely-cs-project/send", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(messagesToSend),
-        }).then(() => {
-          /* Remove the messages that we submitted, just in case some have been added since. */
-          messages = messages.filter(
-            (message) => !messagesToSend.includes(message)
-          );
+          body: JSON.stringify(message),
         });
+
+        toInput.value = "";
+        fromInput.value = "";
+        messageInput.value = "";
       }
 
       /**
@@ -179,12 +137,10 @@
           <textarea id="message-input" rows="4"></textarea>
         </div>
         <div>
-          <span id="queue-data">0 messages in queue...</span>
           <button onclick="addMessage()">Send</button>
         </div>
       </div>
       <div>
-        <div id="block-timer"></div>
         <div id="chain"></div>
       </div>
     </div>

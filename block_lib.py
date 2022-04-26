@@ -90,7 +90,9 @@ class Blockchain:
         
         self.mining_thread = threading.Thread(target=self.initialize_mine)
         self.lock = threading.Lock()
-        mining_thread.start()
+        self.messages_cv = threading.Condition(self.lock)
+        
+        self.mining_thread.start()
     
     ###########################################################################
 
@@ -106,6 +108,7 @@ class Blockchain:
         """
         self.lock.acquire()
         self.unconfirmed_messages.append(message)
+        self.messages_cv.notify_all()
         self.lock.release()
 
     ###########################################################################
@@ -163,14 +166,17 @@ class Blockchain:
         returns hash of new block upon success
         returns false on failure
         """
+
         self.lock.acquire()
-        if self.unconfirmed_messages == []:
-            return False
+
+        while len(self.unconfirmed_messages) == 0:
+            self.messages_cv.wait()
 
         prev_block = self.__blocks[-1].hash
         block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
         self.unconfirmed_messages = []
-        self.lock.relase()
+
+        self.lock.release()
 
         new_hash = self.proof_of_work(block)
 
