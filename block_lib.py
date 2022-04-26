@@ -533,7 +533,7 @@ class Message:
         self.sender = sender
         self.receiver = receiver
         self.message = message
-        self.time = datetime.datetime.now(timezone(timedelta(hours=-5), 'EST'))
+        self.time = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-5), 'EST'))
 
     ###########################################################################
 
