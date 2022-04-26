@@ -1,4 +1,3 @@
-#! /usr/bin/env python3
 """
  * Groupname: Definitely CS Majors
 
@@ -37,26 +36,66 @@ class Blockchain:
     """
     Class for management of entire blockchain.
     
-    Public Functions:
+    Functions:
         __init__ : initializes blockchain
             Parameters:
                 None
             Returns:
                 None
                 
-        add_block : adds a block to blockchain
+        add_genesis_block : creates first block in the chain. This block will be empty (this mainly serves to prevent errors with hash computation)
             Parameters:
-                block (Block class) - empty block
-                proof ( hex ) - proof of work hash
+                None
             Returns:
                 None
                 
+        add_message : add message to unconfirmed messages queue
+            Parameters:
+                message (Message class) : message to be added
+            Returns:
+                None
+                
+        add_block : adds a block to blockchain
+            Parameters:
+                block (Block class):  empty block
+                hash (hex) - hexademical hash of block
+            Returns:
+                False (bool) if any signs of tampering appear:
+                    1) block's prev_hash does not correspond with hash of previous block
+                    2) block's hash is invalid (see valid_hash))
+                True (bool) otherwise
+                
         proof_of_work : gets the hash of the next block to be inserted
             Parameters:
-                <>
+                block (Block class) : a block for which to calculate the hash
             Returns:
-                <>
+                computed_hash (hex) : hash which has been computed based on the block
+        
+        valid_hash : Checks if hash is correct and satisfies difficulty requirements. This is an anti-tampering measure, as the code should never calculate incorrect hashes when properly implemented
+            Parameters: 
+                block (Block class):  empty block
+                hash (hex) - hexademical hash of block
+            Returns:
+                False (bool) if any signs of tampering appear:
+                    1) hash does not meet difficulty requirements, i.e. does not have enough leading 0's
+                    2) hash does not match the block, i.e. upon recalculation, a different hash is acquired
+                True (bool) otherwise
                 
+        mine : Adds pending messages to the blockchain by solving proof-of-work algorithm and trasnferring messages into new block
+            Parameters:
+                None
+            Returns:
+                False (bool) if:
+                    1) There are no new messages to put into a block (otherwise we would have empty blocks)
+                    2) add_block returns false (see add_block documentation)
+                Otherwise, returns hash (hex) of newly added block
+                
+        initialize_mine : starts the mining function, multithreading edition
+            Parameters:
+                None
+            Returns:
+                None
+        
         print_chain : prints all data stored within blockchain <INCOMPLETE>
             Parameters:
                 None
@@ -67,77 +106,101 @@ class Blockchain:
             Parameters:
                 None
             Returns:
-                html_string - string containing html code for website
+                html_string (string) : string containing html code for website
     
     Public Members:
-        unconfirmed_messages : list of all messages not yet stored in blocks, accessed in FIFO order
+        unconfirmed_messages (list of messages) : list of all messages not yet stored in blocks, accessed in FIFO order
+        mining_thread (Thread class) : thread running the mining function
+        lock (Lock class) : used for locking messages to prevent errors
+        messages_cv (Conditional variable) : used for locking
     
     Private Members:
-        __blocks : all blocks contained within blockchain
-        __dificulty : length of hash to compute, longer hashes take longer to compute thus increasing the mining time
+        __blocks (list of blocks) : all blocks contained within blockchain
+        __dificulty (int>0) : length of hash to compute (specifically, number of leading 0's), longer hashes take longer to compute thus increasing the mining time
     """
     
     ###########################################################################
 
     def __init__( self, in_difficulty ):
         
-        #initialize empty list of blocks and difficulty as private members (DO NOT REMOVE UNDERSCORES)
+        #initialize private members
         #while Python doesn't completely prevent private member access, this is more secure
         self.__blocks = []
         self.__difficulty = in_difficulty
+        
+        #initialize public member
         self.unconfirmed_messages = []
+        
+        #add first block
         self.add_genesis_block()
         
+        #multithreading elements
         self.mining_thread = threading.Thread(target=self.initialize_mine)
         self.lock = threading.Lock()
         self.messages_cv = threading.Condition(self.lock)
-        
         self.mining_thread.start()
     
     ###########################################################################
 
-    def add_genesis_block(self):
+    def add_genesis_block( self ):
+        
+        #initialize new block
         genesis_block = Block()
+        
+        #append the block
         self.__blocks.append(genesis_block)
+        
+        return
 
     ###########################################################################
 
     def add_message(self, message):
-        """
-        add message to unconfirmed messages queue
-        """
+        
+        #locks messages
         self.lock.acquire()
+        
+        #adds new message
         self.unconfirmed_messages.append(message)
         self.messages_cv.notify_all()
+        
+        #releases lock
         self.lock.release()
+        
+        return
 
     ###########################################################################
       
     def add_block( self, block, hash ):
         
-        # check new block matches last hash in chain
+        #returns false if new block is not properly connected to the last block in chain
         last_hash = self.__blocks[-1].hash
         if block.prev_hash != last_hash:
             return False
         
-        # checks if new block hash is valid
+        #returns false if block hash is invalid
         if not self.valid_hash(block, hash):
             return False
 
+        #set block hash and append to blockchain
         block.hash = hash
         self.__blocks.append(block)
-        return True
         
+        return True
 
     ###########################################################################
 
-    def proof_of_work(self, block): 
+    def proof_of_work( self, block ): 
 
+        #set number only used once to 0
         block.nonce = 0
 
-        # increments nonce until hash meets requirements in brute force style
+        #first hash calculation
         computed_hash = block.compute_hash()
+
+        #loop until hash meets difficulty requirements (for high difficulty, this may take a while)
         while not(computed_hash.startswith('0' * self.__difficulty)):
+            
+            #increment nonce and get new hash
             block.nonce += 1
             computed_hash = block.compute_hash()
 
@@ -145,14 +208,13 @@ class Blockchain:
 
     ###########################################################################
     
-    def valid_hash(self, block, hash):
-        """
-        Checks if hash is correct and satisfies difficulty
-        Returns True on succuss, false on failure
-        """
+    def valid_hash( self, block, hash ):
+
+        #returns false if the hash does not start with the proper number of 0's
         if not hash.startswith('0' * self.__difficulty):
             return False
 
+        #recompute hash, return false if the hashes do not match
         if hash != block.compute_hash():
             return False
 
@@ -160,26 +222,28 @@ class Blockchain:
 
     ###########################################################################
 
-    def mine (self):
-        """
-        Adds pending transactions to the blockchain by solving proof-of-work and confirming messages
-        returns hash of new block upon success
-        returns false on failure
-        """
+    def mine( self ):
 
         self.lock.acquire()
 
+        #check that there are messaged in queue
         while len(self.unconfirmed_messages) == 0:
             self.messages_cv.wait()
 
-        prev_block = self.__blocks[-1].hash
-        block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block)
+        #get most recent block hash
+        prev_block_hash = self.__blocks[-1].hash
+        
+        #create a new block and insert all queued messages
+        block = Block(messages=self.unconfirmed_messages, prev_hash=prev_block_hash)
+        
+        #clear messages -- in certain implementations this is not enough, but this is sufficient for functionality in our use case
         self.unconfirmed_messages = []
-
         self.lock.release()
-
+        
+        #get the new hash
         new_hash = self.proof_of_work(block)
 
+        #if we fail to add the block properly, return False
         if not self.add_block(block, new_hash):
             return False
 
@@ -191,7 +255,6 @@ class Blockchain:
 
         while True:
             self.mine()
-
 
     ###########################################################################
 
@@ -233,37 +296,43 @@ class Block:
     Functions:
         __init__ : initializes a Block
             Parameters:
-                transactions (list, optional) - list of transactions stored by block. Must be of transaction class. If not given, defaults to []
-                prev_hash (string, optional) - string storing previous hash. If no hash is given, defaults to "ROOT"
+                transactions (list, optional) : list of transactions stored by block. Must be of transaction class. If not given, defaults to []
+                prev_hash (string, optional) : string storing previous hash. If no hash is given, defaults to "ROOT"
             Returns:
                 None
-        
+                
+        compute_hash : gets hash of block contents
+            Parameters:
+                None
+            Returns:
+                calculated hash (hex) using SHA256 algorithm
+                
         print_block : prints messages stored in Block. Also creates a border around the block
             Parameters:
-                block_width (int, optional) - width of block in chars. Defaults to 60.
+                block_width (int, optional) : width of block in chars. Defaults to 60.
             Returns:
-                output (string) - string
+                output (string) : string
                 
         __gen_line (PRIVATE) : creates an individual line of Block output, formatted to look all nice
             Parameters:
-                string (string) - the unaltered line of output from the Message
+                string (string) : the unaltered line of output from the Message
                 width (int) - width of block to be produced
-                lborder (string) - left side border of block
-                rborder (string) - right side border of block
+                lborder (string) : left side border of block
+                rborder (string) : right side border of block
             Returns:
-                output (string) - string of output which is formatted to match the block
+                output (string) : string of output which is formatted to match the block
                 
         html : get an html representation of a block with styling included.
             Parameters:
                 None
             Returns:
-                html_string - string containing html code for website
+                html_string : string containing html code for website
 
     Public Members:
-        prev_hash (hex) - hash of previous block
-        messages (list of Message class) - list of messages stored by block. Must be of transaction class.
-        hash (hex) - block hash generated using data
-        nonce (int) - number only use once
+        hash (hex) : block hash. Defaults to 0x0, can be calculated later and modified
+        prev_hash (hex) : hash of previous block
+        messages (list of Message class) : list of messages stored by block. Must be of transaction class.
+        nonce (int>=0) : number only use once (for hash calculation)
     """
     
     ###########################################################################
@@ -278,11 +347,7 @@ class Block:
 
     ###########################################################################
 
-
     def compute_hash( self ):
-        """
-        Returns hash of block contents
-        """
 
         #initialize block data using previous hash
         self.data = str(self.prev_hash)
