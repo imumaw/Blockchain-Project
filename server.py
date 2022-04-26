@@ -29,5 +29,9 @@ def send():
 def chain():
     return blockchain.html()
 
+@app.route(ROOT + "/logo")
+def logo():
+    return send_file("logo.png")
+
 if __name__ == "__main__":
     app.run(debug=True)
