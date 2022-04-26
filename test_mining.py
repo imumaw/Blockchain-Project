@@ -1,28 +1,18 @@
 #! /usr/bin/env python3
 
 import block_lib as blib
+import secrets
 import time
 
 def main():
-    difficulty = 6
-    block_count = 10
+    difficulty = 1
     blockchain = blib.Blockchain(difficulty)
-    i = 0
 
-    while(i < block_count):
-        
-        start_time = time.time()
-        new_hash = blockchain.mine()
-        end_time = time.time()
-        elapsed_time = end_time - start_time
+    messages = [blib.Message(sender="anon", receiver="anon", message=secrets.token_hex(x)) for x in range(10)]
 
-        if new_hash:
-            print("Block #" + str(i+1) + " added at hash: " + str(new_hash))
-
-        print("Elapsed time: {:.2f} seconds".format(elapsed_time))
-        print("--------------------------------------")
-
-        i += 1
+    for message in messages:
+        blockchain.add_message(message)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
