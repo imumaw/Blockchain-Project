@@ -1,7 +1,7 @@
 from flask import Flask, request, send_file
 import block_lib as blib
 
-blockchain = blib.Blockchain(2)
+blockchain = blib.Blockchain(3)
 
 ROOT = "/definitely-cs-project"
 

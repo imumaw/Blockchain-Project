@@ -533,7 +533,7 @@ class Message:
         self.sender = sender
         self.receiver = receiver
         self.message = message
-        self.time = datetime.datetime.now()
+        self.time = datetime.datetime.now(timezone(timedelta(hours=-5), 'EST'))
 
     ###########################################################################
 
@@ -564,7 +564,7 @@ class Message:
                     </li>
                     <li>
                         <span style="display: inline-block; min-width: 50px;">At:</span>
-                        <span style="flex: 10;">{self.time.strftime('%a, %b %d, %Y %I:%M%p')}</span>
+                        <span style="flex: 10;">{self.time.strftime('%a, %b %d, %Y %I:%M%:%Sp')}</span>
                     </li>
                 </ul>
                 <p style='margin-left: 15px;'>
