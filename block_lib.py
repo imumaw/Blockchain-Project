@@ -564,7 +564,7 @@ class Message:
                     </li>
                     <li>
                         <span style="display: inline-block; min-width: 50px;">At:</span>
-                        <span style="flex: 10;">{self.time.strftime('%a, %b %d, %Y %I:%M%:%Sp')}</span>
+                        <span style="flex: 10;">{self.time.strftime('%a, %b %d, %Y %I:%M:%Sp')}</span>
                     </li>
                 </ul>
                 <p style='margin-left: 15px;'>
