@@ -480,6 +480,7 @@ class Block:
         #create string of code and append the start of the block
         html_string = '<div style="padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, .1);">'
         html_string += f'<div style="font-size: 1rem; font-weight: bold; font-family: monospace; text-align: center;">Block Hash: {self.hash}</div>'
+        html_string += f'<div style="font-size: 1rem; font-weight: bold; font-family: monospace; text-align: center;">Previous Hash: {self.prev_hash}</div>'
         
         #append each message's code to output
         for message in self.messages:
