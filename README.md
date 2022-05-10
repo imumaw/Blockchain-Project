@@ -2,10 +2,10 @@ This is the final project for Data Structures SP22 at Notre Dame for group 'defi
 
 The group members are:
 
-1. Adam Mazurek
-2. Isaiah Mumaw
-3. Peter Ainsworth
-4. Ed Stifter
+1. Isaiah Mumaw (2022, Physics)
+2. Ed Stifter (2023, Electrical Engineering)
+3. Peter Ainsworth (2024, Computer Science)
+4. Adam Mazurek (2024, Physics)
 
 # Blockchain
 
